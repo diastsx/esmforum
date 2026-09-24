@@ -1,5 +1,8 @@
 const express = require('express')
 const modelo = require('./modelo.js');
+const criar_servico_perguntas = require('./servicos/perguntas.js');
+const buscar_por_texto = require('./estrategias/buscar_por_texto.js');
+const servico_perguntas = criar_servico_perguntas(modelo, buscar_por_texto);
 
 const app = express()
 app.use(express.json());
@@ -13,7 +16,7 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
   try {
-    const perguntas = modelo.listar_perguntas();
+    const perguntas = servico_perguntas.listar_perguntas(req.query.busca);
     res.send(perguntas);
   }
   catch(erro) {
