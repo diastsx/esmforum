@@ -1,0 +1,36 @@
+flowchart TD
+    Inicio([Início])
+
+    Exibir[Exibir lista de perguntas e campo de busca]
+    Informar[Usuário informa o termo de busca]
+    Solicitar[Usuário solicita a busca]
+
+    TermoVazio{O termo está vazio?}
+
+    ListarTodas[Buscar todas as perguntas]
+    Buscar[Buscar perguntas cujo texto contenha o termo]
+    Resultados{Foram encontradas perguntas?}
+
+    ExibirTodas[Exibir lista completa de perguntas]
+    ExibirResultados[Exibir perguntas encontradas]
+    ExibirMensagem[Informar que nenhuma pergunta foi encontrada]
+
+    Fim([Fim])
+
+    Inicio --> Exibir
+    Exibir --> Informar
+    Informar --> Solicitar
+    Solicitar --> TermoVazio
+
+    TermoVazio -- Sim --> ListarTodas
+    ListarTodas --> ExibirTodas
+    ExibirTodas --> Fim
+
+    TermoVazio -- Não --> Buscar
+    Buscar --> Resultados
+
+    Resultados -- Sim --> ExibirResultados
+    ExibirResultados --> Fim
+
+    Resultados -- Não --> ExibirMensagem
+    ExibirMensagem --> Fim

@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor Usuario
+    participant Frontend as Frontend React
+    participant Backend as Backend Express
+    participant Modelo as modelo.js
+    participant Banco as SQLite
+
+    Usuario->>Frontend: Informa palavra-chave
+    Usuario->>Frontend: Solicita busca
+
+    Frontend->>Backend: GET /?busca=termo
+    Backend->>Modelo: buscar_perguntas(termo)
+    Modelo->>Banco: Consultar perguntas pelo texto
+    Banco-->>Modelo: Perguntas encontradas
+    Modelo-->>Backend: Lista de perguntas
+    Backend-->>Frontend: JSON com resultados
+
+    alt Existem resultados
+        Frontend-->>Usuario: Exibe perguntas encontradas
+    else Nenhum resultado
+        Frontend-->>Usuario: Informa que não há resultados
+    end

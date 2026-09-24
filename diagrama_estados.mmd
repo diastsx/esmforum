@@ -1,0 +1,7 @@
+stateDiagram-v2
+    [*] --> NaoLida : Nova resposta gera notificação
+
+    state "Não lida" as NaoLida
+    state "Lida" as Lida
+
+    NaoLida --> Lida : Usuário marca como lida
