@@ -107,7 +107,16 @@ Em uma busca por perguntas:
 6. a View formata a lista;
 7. o backend responde ao frontend em JSON.
 
-A mesma estrutura seria utilizada para respostas, alterando apenas os componentes responsáveis pelo respectivo caso de uso.
+Em um cadastro de resposta:
+
+1. o frontend envia `POST /respostas`;
+2. a rota encaminha a requisição ao `RespostasController`;
+3. o controller chama o `RespostasService`;
+4. o serviço aplica as regras necessárias e utiliza o `RespostaModel`;
+5. o model acessa o repository para persistir a resposta;
+6. o resultado retorna ao controller;
+7. a `RespostasView` formata a resposta em JSON;
+8. o backend devolve o resultado ao frontend.
 
 ## Diagrama
 
