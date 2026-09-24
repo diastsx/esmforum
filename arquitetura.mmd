@@ -1,0 +1,37 @@
+flowchart LR
+    U[Usuário]
+
+    subgraph Apresentacao["Camada de Apresentação"]
+        F[Frontend React]
+        API[API Express<br/>server.js]
+    end
+
+    subgraph Negocio["Camada de Negócio"]
+        S[servicos/perguntas.js]
+        E[estrategias/buscar_por_texto.js]
+        M[modelo.js]
+    end
+
+    subgraph Dados["Camada de Dados"]
+        BD[bd/bd_utils.js]
+        DB[(SQLite)]
+    end
+
+    U --> F
+    F -->|HTTP / JSON| API
+
+    API --> S
+    API --> M
+
+    S --> E
+    S --> M
+
+    M --> BD
+    BD --> DB
+
+    DB --> BD
+    BD --> M
+    M --> API
+    S --> API
+    API -->|JSON| F
+    F --> U
