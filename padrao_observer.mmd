@@ -1,0 +1,24 @@
+classDiagram
+    class ServicoRespostas {
+        +cadastrar(idPergunta, texto)
+        +notificarObservadores()
+    }
+
+    class ObservadorNovaResposta {
+        <<interface>>
+        +nova_resposta(resposta, idPergunta)
+    }
+
+    class ObservadorNotificacao {
+        +nova_resposta(resposta, idPergunta)
+    }
+
+    class Notificacao {
+        +idNotificacao
+        +mensagem
+        +lida
+    }
+
+    ServicoRespostas --> "0..*" ObservadorNovaResposta : notifica
+    ObservadorNovaResposta <|.. ObservadorNotificacao
+    ObservadorNotificacao --> Notificacao : cria

@@ -1,0 +1,15 @@
+classDiagram
+    class ServicoPerguntas {
+        +listar_perguntas(termo)
+    }
+
+    class BuscarPorTexto {
+        +buscar(perguntas, termo)
+    }
+
+    class BuscarPorTag {
+        +buscar(perguntas, tag)
+    }
+
+    ServicoPerguntas --> BuscarPorTexto : usa estratégia
+    ServicoPerguntas --> BuscarPorTag : usa estratégia alternativa

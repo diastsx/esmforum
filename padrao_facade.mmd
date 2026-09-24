@@ -1,0 +1,25 @@
+classDiagram
+    class PerguntaFacade {
+        +obter_detalhes(idPergunta)
+    }
+
+    class Perguntas {
+        +buscar(idPergunta)
+    }
+
+    class Respostas {
+        +listar_por_pergunta(idPergunta)
+    }
+
+    class Tags {
+        +listar_por_pergunta(idPergunta)
+    }
+
+    class Votos {
+        +total_por_pergunta(idPergunta)
+    }
+
+    PerguntaFacade --> Perguntas
+    PerguntaFacade --> Respostas
+    PerguntaFacade --> Tags
+    PerguntaFacade --> Votos
