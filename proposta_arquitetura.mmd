@@ -1,0 +1,57 @@
+flowchart LR
+    F[Frontend React]
+
+    subgraph API["Apresentação / MVC"]
+        R[Routes]
+
+        PC[PerguntasController]
+        RC[RespostasController]
+
+        PV[PerguntasView]
+        RV[RespostasView]
+    end
+
+    subgraph Negocio["Negócio"]
+        PS[PerguntasService]
+        RS[RespostasService]
+        E[Estratégia de busca]
+    end
+
+    subgraph Model["Model / Dados"]
+        PM[PerguntaModel]
+        RM[RespostaModel]
+
+        PR[PerguntasRepository]
+        RR[RespostasRepository]
+
+        BD[bd_utils.js]
+        DB[(SQLite)]
+    end
+
+    F -->|HTTP| R
+
+    R --> PC
+    R --> RC
+
+    PC --> PS
+    RC --> RS
+
+    PS --> E
+    PS --> PM
+    RS --> RM
+
+    PM --> PR
+    RM --> RR
+
+    PR --> BD
+    RR --> BD
+    BD --> DB
+
+    PS --> PC
+    RS --> RC
+
+    PC --> PV
+    RC --> RV
+
+    PV -->|JSON| F
+    RV -->|JSON| F
