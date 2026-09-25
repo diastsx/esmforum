@@ -3,13 +3,19 @@ classDiagram
         +listar_perguntas(termo)
     }
 
+    class EstrategiaBusca {
+        <<interface>>
+        +buscar(perguntas, termo)
+    }
+
     class BuscarPorTexto {
         +buscar(perguntas, termo)
     }
 
     class BuscarPorTag {
-        +buscar(perguntas, tag)
+        +buscar(perguntas, termo)
     }
 
-    ServicoPerguntas --> BuscarPorTexto : usa estratégia
-    ServicoPerguntas --> BuscarPorTag : usa estratégia alternativa
+    ServicoPerguntas --> EstrategiaBusca : usa
+    EstrategiaBusca <|.. BuscarPorTexto
+    EstrategiaBusca <|.. BuscarPorTag

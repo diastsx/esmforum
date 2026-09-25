@@ -2,21 +2,33 @@ sequenceDiagram
     actor Usuario
     participant Frontend as Frontend React
     participant Backend as Backend Express
+    participant Servico as servicos/perguntas.js
     participant Modelo as modelo.js
+    participant Estrategia as buscar_por_texto.js
     participant Banco as SQLite
 
     Usuario->>Frontend: Informa palavra-chave
     Usuario->>Frontend: Solicita busca
-
     Frontend->>Backend: GET /?busca=termo
-    Backend->>Modelo: buscar_perguntas(termo)
-    Modelo->>Banco: Consultar perguntas pelo texto
-    Banco-->>Modelo: Perguntas encontradas
-    Modelo-->>Backend: Lista de perguntas
+
+    Backend->>Servico: listar_perguntas(termo)
+    Servico->>Modelo: listar_perguntas()
+    Modelo->>Banco: Consultar perguntas
+    Banco-->>Modelo: Perguntas cadastradas
+    Modelo-->>Servico: Lista de perguntas
+
+    alt Termo informado
+        Servico->>Estrategia: buscar_por_texto(perguntas, termo)
+        Estrategia-->>Servico: Perguntas filtradas
+    else Termo vazio
+        Note over Servico: Mantém a lista completa
+    end
+
+    Servico-->>Backend: Lista resultante
     Backend-->>Frontend: JSON com resultados
 
     alt Existem resultados
-        Frontend-->>Usuario: Exibe perguntas encontradas
+        Frontend-->>Usuario: Exibe perguntas
     else Nenhum resultado
         Frontend-->>Usuario: Informa que não há resultados
     end

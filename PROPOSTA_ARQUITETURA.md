@@ -97,7 +97,7 @@ async function cadastrar(req, res) {
 
 ## Fluxo completo
 
-Em uma busca por perguntas:
+Na estrutura proposta, em uma busca por perguntas:
 
 1. o frontend envia `GET /perguntas?busca=termo`;
 2. a rota encaminha a requisição ao `PerguntasController`;

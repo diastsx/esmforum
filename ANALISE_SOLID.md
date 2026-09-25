@@ -2,19 +2,17 @@
 
 ## Contexto
 
-O backend do ESM Forum é pequeno e concentra suas principais responsabilidades em três arquivos: `server.js`, com as rotas e a configuração do Express; `modelo.js`, com as operações de perguntas e respostas; e `bd/bd_utils.js`, com o acesso ao SQLite.
+O backend do ESM Forum concentra suas principais responsabilidades em `server.js`, `modelo.js` e `bd/bd_utils.js`.
 
-A análise a seguir considera essa estrutura para identificar pontos de aderência e de melhoria em relação aos princípios SOLID.
+A partir dessa estrutura, são identificados pontos de aderência e oportunidades de melhoria em relação aos princípios SOLID.
 
 ## Pontos positivos
 
-### 1. Separação entre transporte HTTP e operações do domínio
+### 1. Separação entre HTTP e persistência
 
 **Princípio relacionado:** Single Responsibility Principle (SRP)
 
-O `server.js` não executa diretamente consultas SQL. As rotas recebem os dados da requisição e delegam as operações ao módulo `modelo.js`.
-
-Exemplo:
+As rotas de `server.js` recebem as requisições e delegam as operações ao `modelo.js`, sem executar SQL diretamente.
 
 ```javascript
 app.post('/perguntas', (req, res) => {
@@ -28,7 +26,7 @@ app.post('/perguntas', (req, res) => {
 });
 ```
 
-A persistência da pergunta é realizada pelo modelo:
+A persistência é realizada pelo modelo:
 
 ```javascript
 function cadastrar_pergunta(texto) {
@@ -41,15 +39,13 @@ function cadastrar_pergunta(texto) {
 }
 ```
 
-Essa separação evita que a rota acumule também a responsabilidade de conhecer SQL e a estrutura do banco.
+Assim, a rota não precisa conhecer os comandos utilizados para acessar o banco.
 
-### 2. Funções do modelo possuem objetivos específicos
+### 2. Operações específicas no modelo
 
 **Princípio relacionado:** Single Responsibility Principle (SRP)
 
-As funções de `modelo.js` executam operações pequenas e claramente delimitadas.
-
-Exemplos:
+As funções de `modelo.js` possuem objetivos definidos:
 
 ```javascript
 function get_pergunta(id_pergunta) {
@@ -67,13 +63,13 @@ function get_respostas(id_pergunta) {
 }
 ```
 
-Cada função representa uma operação específica, em vez de existir uma única função genérica responsável por diversos comportamentos do fórum. Isso torna as operações mais fáceis de compreender, testar e modificar isoladamente.
+Cada função representa uma operação específica sobre perguntas ou respostas, em vez de concentrar diferentes comportamentos em uma única função.
 
-### 3. Acesso ao banco é encapsulado em um módulo próprio
+### 3. Acesso ao SQLite encapsulado
 
 **Princípio relacionado:** Single Responsibility Principle (SRP)
 
-O arquivo `bd/bd_utils.js` concentra a interação direta com `better-sqlite3`:
+`bd/bd_utils.js` concentra o uso direto da biblioteca `better-sqlite3`:
 
 ```javascript
 function query(query, params) {
@@ -89,25 +85,15 @@ function exec(statement, params) {
 }
 ```
 
-Com isso, os demais módulos não precisam manipular diretamente a API da biblioteca `better-sqlite3`. O módulo possui uma responsabilidade clara: fornecer as operações básicas de acesso ao banco utilizadas pelo restante da aplicação.
-
-A função `reconfig()` também permite substituir o banco utilizado, característica aproveitada pelos testes de integração.
+Os demais módulos utilizam essas operações sem manipular diretamente a API do `better-sqlite3`.
 
 ## Oportunidades de melhoria
 
-### 1. `server.js` concentra responsabilidades diferentes
+### 1. `server.js` acumula responsabilidades
 
-**Princípio violado:** Single Responsibility Principle (SRP)
+**Princípio relacionado:** Single Responsibility Principle (SRP)
 
-O arquivo `server.js` atualmente é responsável por:
-
-* criar e configurar a aplicação Express;
-* configurar CORS;
-* definir todas as rotas;
-* tratar requisições e respostas;
-* iniciar o servidor HTTP.
-
-Trecho:
+Além de definir as rotas, `server.js` configura o Express e o CORS, trata requisições e respostas e inicia o servidor HTTP.
 
 ```javascript
 const app = express();
@@ -120,41 +106,21 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
-
-// definição das rotas...
-
-const port = 5000;
-app.listen(port, 'localhost', () => {
-  console.log(`ESM Forum rodando em ${port}`);
-});
 ```
 
-À medida que novas funcionalidades forem adicionadas, esse arquivo tenderá a crescer e acumular motivos diferentes para mudança.
+Com o crescimento da aplicação, as rotas poderiam ser separadas em módulos próprios, reduzindo a quantidade de responsabilidades desse arquivo.
 
-Uma melhoria seria separar a configuração da aplicação, as rotas e a inicialização do servidor em módulos distintos. Por exemplo:
+### 2. `modelo.js` depende diretamente de `bd_utils.js`
 
-```text
-server.js
-routes/
-    perguntas.js
-    respostas.js
-```
+**Princípio relacionado:** Dependency Inversion Principle (DIP)
 
-Essa separação deve ser feita quando a complexidade justificar a estrutura adicional, evitando também abstrações desnecessárias.
-
-### 2. `modelo.js` depende diretamente da implementação de acesso a dados
-
-**Princípio violado:** Dependency Inversion Principle (DIP)
-
-O módulo começa importando diretamente uma implementação concreta:
+O modelo importa diretamente a implementação utilizada para acesso aos dados:
 
 ```javascript
 var bd = require('./bd/bd_utils.js');
 ```
 
-Isso faz com que a lógica de `modelo.js` dependa diretamente do mecanismo de persistência utilizado pelo projeto.
-
-Existe a função:
+A função `reconfig_bd()` permite substituir essa dependência nos testes:
 
 ```javascript
 function reconfig_bd(mock_bd) {
@@ -162,11 +128,7 @@ function reconfig_bd(mock_bd) {
 }
 ```
 
-que facilita a substituição da dependência durante testes. Essa solução melhora a testabilidade, mas a dependência concreta continua sendo criada pelo próprio módulo em sua inicialização.
-
-Uma aplicação mais completa do DIP faria com que o componente responsável pelas operações do domínio recebesse sua dependência de acesso aos dados externamente.
-
-Por exemplo:
+Apesar disso, a dependência concreta ainda é definida pelo próprio módulo. Uma alternativa seria recebê-la externamente:
 
 ```javascript
 function criarModelo(repositorio) {
@@ -178,6 +140,4 @@ function criarModelo(repositorio) {
 }
 ```
 
-Nesse desenho, a lógica dependeria do contrato esperado do repositório e não precisaria conhecer diretamente `better-sqlite3` ou `bd_utils.js`.
-
-Isso também permitiria trocar a implementação de persistência ou utilizar uma implementação em memória nos testes sem modificar internamente o módulo.
+Dessa forma, o modelo dependeria apenas das operações esperadas do repositório, facilitando a substituição da implementação de persistência.

@@ -14,15 +14,15 @@ No backend, `server.js` recebe as requisições HTTP, acessa os parâmetros envi
 
 ### Negócio
 
-`modelo.js` concentra as operações relacionadas a perguntas e respostas.
+A busca possui uma separação específica de negócio: `servicos/perguntas.js` coordena a listagem e a aplicação do filtro, enquanto `estrategias/buscar_por_texto.js` contém a regra de busca por texto.
 
-A funcionalidade de busca também possui uma camada de serviço em `servicos/perguntas.js` e uma estratégia específica em `estrategias/buscar_por_texto.js`.
+As demais operações ainda são chamadas diretamente de `server.js` para `modelo.js`.
 
 ### Dados
 
-`bd/bd_utils.js` encapsula o acesso ao SQLite por meio da biblioteca `better-sqlite3`.
+A persistência está distribuída entre `modelo.js`, que contém as consultas SQL de perguntas e respostas, e `bd/bd_utils.js`, que encapsula o uso da biblioteca `better-sqlite3`.
 
-O banco armazena atualmente perguntas e respostas.
+Por isso, a separação entre negócio e dados ainda não é completa na estrutura atual.
 
 ## Comunicação
 
