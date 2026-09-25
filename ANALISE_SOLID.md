@@ -91,7 +91,7 @@ Os demais módulos utilizam essas operações sem manipular diretamente a API do
 
 ### 1. `server.js` acumula responsabilidades
 
-**Princípio relacionado:** Single Responsibility Principle (SRP)
+**Princípio violado:** Single Responsibility Principle (SRP)
 
 Além de definir as rotas, `server.js` configura o Express e o CORS, trata requisições e respostas e inicia o servidor HTTP.
 
@@ -112,7 +112,7 @@ Com o crescimento da aplicação, as rotas poderiam ser separadas em módulos pr
 
 ### 2. `modelo.js` depende diretamente de `bd_utils.js`
 
-**Princípio relacionado:** Dependency Inversion Principle (DIP)
+**Princípio violado:** Dependency Inversion Principle (DIP)
 
 O modelo importa diretamente a implementação utilizada para acesso aos dados:
 

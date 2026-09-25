@@ -10,7 +10,7 @@ Na estrutura atual do ESM Forum, as rotas HTTP estão concentradas em `server.js
 
 ### Rotas limitadas às funcionalidades existentes
 
-O backend possuía quatro operações HTTP principais:
+O backend possui quatro operações HTTP principais:
 
 ```javascript
 app.get('/', ...);
@@ -19,9 +19,9 @@ app.get('/respostas/:id_pergunta', ...);
 app.post('/respostas', ...);
 ```
 
-Não havia rotas ou estruturas antecipadas para votação, tags, perfis ou notificações.
+não há rotas ou estruturas antecipadas para votação, tags, perfis ou notificações.
 
-Por exemplo, o cadastro de perguntas delegava diretamente ao modelo:
+Por exemplo, o cadastro de perguntas delega diretamente ao modelo:
 
 ```javascript
 app.post('/perguntas', (req, res) => {
@@ -35,7 +35,7 @@ app.post('/perguntas', (req, res) => {
 });
 ```
 
-Para o tamanho do sistema naquele momento, não havia necessidade de acrescentar controllers ou services apenas para encaminhar essa operação.
+Para o tamanho do sistema naquele momento, não há necessidade de acrescentar controllers ou services apenas para encaminhar essa operação.
 
 ### Operações específicas no modelo
 
